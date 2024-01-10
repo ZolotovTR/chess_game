@@ -47,18 +47,29 @@ while running:
                 selected_col = click_pos[0] // SQUARE_SIZE
                 selected_square = chess.square(selected_col, CELLS_DEAGONALLY - selected_row - 1)
 
-                if board.piece_at(selected_square):
-                    selected_piece = selected_square
-                elif 'selected_piece' in globals() and not board.piece_at(selected_square):
-                    uci = chess.square_name(selected_piece) + chess.square_name(selected_square)
-                    move = chess.Move.from_uci(uci)
-                    if move in board.legal_moves:
-                        board.push(move)
-                        del selected_piece
+                if not 'selected_piece' in globals():
+                    piece = board.piece_at(selected_square)
+                    if piece and piece.color == board.turn:
+                        selected_piece = selected_square
+                elif 'selected_piece' in globals() and selected_square == selected_piece:
+                    del selected_piece
+                else:
+                    piece = board.piece_at(selected_square)
+                    if piece and piece.color == board.turn:
+                        selected_piece = selected_square
+                    else:
+                        uci = chess.square_name(selected_piece) + chess.square_name(selected_square)
+                        move = chess.Move.from_uci(uci)
+                        if move in board.legal_moves:
+                            board.push(move)
+                            del selected_piece
 
     background = pygame.image.load('images/board.png')
     background = pygame.transform.scale(background, (BOARD_SIZE, BOARD_SIZE))
     screen.blit(background, (0, 0))
+    move_surface = pygame.Surface((SQUARE_SIZE, SQUARE_SIZE))
+    move_surface.set_alpha(128)
+    move_surface.fill(GREEN)
     for row in range(CELLS_DEAGONALLY - 1, -1, -1):
         for col in range(CELLS_DEAGONALLY - 1, -1, -1):
             square = chess.square(col, CELLS_DEAGONALLY - row - 1)
@@ -67,10 +78,16 @@ while running:
                 symbol = piece.symbol()
                 image = piece_images.get(symbol, None)
                 if image:
-                    if 'selected_piece' in globals() and square == selected_piece:
-                        pygame.draw.rect(screen, GREEN,
-                                         (SQUARE_SIZE * col, SQUARE_SIZE * row, SQUARE_SIZE, SQUARE_SIZE))
                     screen.blit(image, (SQUARE_SIZE * col, SQUARE_SIZE * row))
+
+            if 'selected_piece' in globals() and square == selected_piece:
+                screen.blit(move_surface, (SQUARE_SIZE * col, SQUARE_SIZE * row))
+
+            if 'selected_piece' in globals() and selected_piece != square:
+                moves_from_selected = [move for move in board.legal_moves if move.from_square == selected_piece]
+                for move in moves_from_selected:
+                    if move.to_square == square:
+                        pygame.draw.rect(screen, GREEN, (SQUARE_SIZE * col, SQUARE_SIZE * row, SQUARE_SIZE, SQUARE_SIZE))
 
     pygame.display.update()
 
