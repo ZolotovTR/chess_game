@@ -1,11 +1,10 @@
-import chess
 import pygame
 import os
 
-board = chess.Board()
-
 CELLS_COUNT = 8
 CELL_SIZE = 50
+
+BOARD_SIZE = CELLS_COUNT * CELL_SIZE
 
 
 GREEN = (0, 128, 0)

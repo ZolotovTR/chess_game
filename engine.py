@@ -7,7 +7,6 @@ STALEMATE_WEIGHT = 0
 CHECKMATE_WEIGHT = -10 ** 6
 
 piece_values = {
-    None: 0,
     chess.PAWN: 100,
     chess.ROOK: 500,
     chess.KNIGHT: 320,
@@ -40,10 +39,6 @@ class Engine:
 
     def calculate_advantage(self):
         advantage = len(list(self.board.legal_moves)) * MOVE_WEIGHT
-        if self.board.is_checkmate():
-            return CHECKMATE_WEIGHT
-        if self.board.is_stalemate():
-            return STALEMATE_WEIGHT
         for square, piece in self.board.piece_map().items():
             piece_value = piece_values[piece.piece_type]
             if piece.color == self.board.turn:
