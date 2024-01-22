@@ -35,6 +35,6 @@ def end(board):
                 text = f1.render('White win', True, (180, 70, 0))
             else:
                 text = f1.render('Black win', True, (180, 70, 0))
-            window_surface.blit(text, (150, 50))
+            window_surface.blit(text, (140, 50))
             pygame.display.update()
 
